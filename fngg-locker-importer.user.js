@@ -95,7 +95,7 @@
         marvel: 8800, dc: 8700, dark: 8600, cube: 8600, starwars: 8500, 'star wars': 8500,
         gaming: 8400, icon: 8300, columbus: 8300, creator: 8300, frozen: 8200, lava: 8100, shadow: 8000, slurp: 7900
     };
-    var rarityScore = { legendary: 900, epic: 700, rare: 600, uncommon: 500, common: 400 };
+    var nonSeriesScore = 100;
 
     var session = null;
     var working = false;
@@ -157,13 +157,12 @@
         }
         return null;
     }
-    function getScore(item) {
-        if (item.series) {
-            var s = item.series.toLowerCase();
-            for (var k in seriesBonus) if (s.indexOf(k) !== -1) return seriesBonus[k];
-            return 7500;
-        }
-        return rarityScore[item.rarity] || 100;
+    function getSeriesScore(item) {
+        if (!item.series) return nonSeriesScore;
+
+        var s = item.series.toLowerCase();
+        for (var k in seriesBonus) if (s.indexOf(k) !== -1) return seriesBonus[k];
+        return 7500;
     }
     
     function processItemsFromProfile(itemsObj, fngg, cdb, seen, skipped, unmappedItems) {
@@ -337,7 +336,7 @@
 
         var ip = document.createElement('div');
         ip.id = 'fngg-info';
-        ip.innerHTML = '<div class="fngg-hdr"><div class="fngg-brand"><img src="'+LOGO+'"><span>Info</span></div><div class="fngg-btns"><button class="fngg-hbtn" id="cibtn">✕</button></div></div><div class="body"><div class="isec"><h3>🎯 What does this do?</h3><p>Imports your entire Fortnite locker to fortnite.gg with one click. All cosmetics (skins, pickaxes, emotes, etc.) get sorted automatically by type and rarity.</p></div><div class="isec"><h3>🔐 Is this safe?</h3><p>100% safe! Uses Epic\'s official Device Code authentication. Your password never touches this script, you login directly on Epic\'s website.</p></div><div class="isec"><h3>⚡ How it works</h3><p>1. Click "Connect Epic Account"<br>2. Login on Epic\'s website<br>3. Click "Import Locker"<br>4. Done! Your locker is updated.</p></div><div class="isec"><h3>🔑 Token Info</h3><p>The access token expires after ~2 hours. After that, simply reconnect. We never store your password.</p></div><div class="isec"><h3>❤️ Support me</h3><p>If you like this tool, use Creator Code <strong style="color:#f0db4f">'+SAC+'</strong> in the Fortnite Item Shop!</p></div><div class="isec footer"><p class="credit">Made with ❤️ by <a href="https://github.com/ItsReepze" target="_blank">Reepze</a></p><p class="links"><a href="https://github.com/ItsReepze/fngg-locker-importer" target="_blank">GitHub</a> · <a href="https://greasyfork.org/en/scripts/563780" target="_blank">Greasyfork</a></p><p class="disclaimer">Not affiliated with Epic Games or fortnite.gg</p><p class="version">v'+VERSION+'</p></div></div>';
+        ip.innerHTML = '<div class="fngg-hdr"><div class="fngg-brand"><img src="'+LOGO+'"><span>Info</span></div><div class="fngg-btns"><button class="fngg-hbtn" id="cibtn">✕</button></div></div><div class="body"><div class="isec"><h3>🎯 What does this do?</h3><p>Imports your entire Fortnite locker to fortnite.gg with one click. All cosmetics (skins, pickaxes, emotes, etc.) get sorted automatically by type and series.</p></div><div class="isec"><h3>🔐 Is this safe?</h3><p>100% safe! Uses Epic\'s official Device Code authentication. Your password never touches this script, you login directly on Epic\'s website.</p></div><div class="isec"><h3>⚡ How it works</h3><p>1. Click "Connect Epic Account"<br>2. Login on Epic\'s website<br>3. Click "Import Locker"<br>4. Done! Your locker is updated.</p></div><div class="isec"><h3>🔑 Token Info</h3><p>The access token expires after ~2 hours. After that, simply reconnect. We never store your password.</p></div><div class="isec"><h3>❤️ Support me</h3><p>If you like this tool, use Creator Code <strong style="color:#f0db4f">'+SAC+'</strong> in the Fortnite Item Shop!</p></div><div class="isec footer"><p class="credit">Made with ❤️ by <a href="https://github.com/ItsReepze" target="_blank">Reepze</a></p><p class="links"><a href="https://github.com/ItsReepze/fngg-locker-importer" target="_blank">GitHub</a> · <a href="https://greasyfork.org/en/scripts/563780" target="_blank">Greasyfork</a></p><p class="disclaimer">Not affiliated with Epic Games or fortnite.gg</p><p class="version">v'+VERSION+'</p></div></div>';
         document.body.appendChild(ip);
 
         var dp = document.createElement('div');
@@ -704,7 +703,7 @@
                     var ra = racingSort[a.type] || 99, rb = racingSort[b.type] || 99;
                     if (ra !== rb) return ra - rb;
                 }
-                var sc = getScore(b) - getScore(a);
+                var sc = getSeriesScore(b) - getSeriesScore(a);
                 if (sc !== 0) return sc;
                 return (a.name || '').localeCompare(b.name || '');
             });
